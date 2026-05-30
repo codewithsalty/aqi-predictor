@@ -104,9 +104,9 @@ Final table:
 <!-- AUTO_METRICS_TABLE_START -->
 | Horizon | Champion Model | RMSE | MAE | R2 |
 |---|---|---:|---:|---:|
-| Day+1 | ridge | 13.283 | 10.040 | 0.294 |
-| Day+2 | random_forest | 28.125 | 22.435 | -3.522 |
-| Day+3 | random_forest | 30.161 | 23.440 | -3.715 |
+| Day+1 | ridge | 10.206 | 7.864 | 0.517 |
+| Day+2 | random_forest | 18.566 | 13.779 | -0.316 |
+| Day+3 | random_forest | 20.079 | 13.696 | -0.334 |
 <!-- AUTO_METRICS_TABLE_END -->
 
 ## 7) Data Quality and Reliability Controls
@@ -170,17 +170,17 @@ Required links to finalize before submission:
 
 ## 11) Runtime Evidence Snapshot
 <!-- AUTO_RUNTIME_SUMMARY_START -->
-- City: `Lahore`
-- Latest registry timestamp: `2026-05-30 20:16:22.360000`
-- Latest metrics timestamp: `2026-05-30 20:16:22.360000`
-- Latest quality audit timestamp: `2026-05-30 20:16:28.721000`
-- Latest prediction timestamp: `2026-05-30T20:17:34.175209+00:00`
+- City: `Islamabad`
+- Latest registry timestamp: `2026-05-30 20:44:38.942000`
+- Latest metrics timestamp: `2026-05-30 20:44:38.942000`
+- Latest quality audit timestamp: `2026-05-30 20:44:45.327000`
+- Latest prediction timestamp: `2026-05-30T20:45:59.281183+00:00`
 
 Latest quality audit:
 ```json
 {
-  "city": "Lahore",
-  "audited_at": "2026-05-30 20:16:28.721000",
+  "city": "Islamabad",
+  "audited_at": "2026-05-30 20:44:45.327000",
   "row_count": 2184,
   "duplicate_rows": 0,
   "null_counts": {
@@ -206,8 +206,8 @@ Latest quality audit:
 Latest prediction snapshot:
 ```json
 {
-  "city": "Lahore",
-  "generated_at": "2026-05-30T20:17:34.175209+00:00",
+  "city": "Islamabad",
+  "generated_at": "2026-05-30T20:45:59.281183+00:00",
   "model": {
     "day_1": "ridge",
     "day_2": "random_forest",
@@ -216,17 +216,17 @@ Latest prediction snapshot:
   "predictions": [
     {
       "date": "2026-05-31",
-      "aqi": 161.43970440206215,
+      "aqi": 152.2400483677909,
       "risk": "Unhealthy"
     },
     {
       "date": "2026-06-01",
-      "aqi": 145.53520833333314,
+      "aqi": 125.37312499999989,
       "risk": "Unhealthy for Sensitive Groups"
     },
     {
       "date": "2026-06-02",
-      "aqi": 130.4929166666665,
+      "aqi": 121.77520833333321,
       "risk": "Unhealthy for Sensitive Groups"
     }
   ]

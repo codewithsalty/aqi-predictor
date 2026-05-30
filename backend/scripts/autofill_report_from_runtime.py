@@ -108,7 +108,11 @@ def main() -> None:
     metrics_doc = _latest(settings.metrics_collection, "evaluated_at")
     registry_doc = _latest(settings.registry_collection, "registered_at")
     quality_doc = _latest("quality_audits", "audited_at")
-    prediction_doc = _latest(settings.predictions_collection, "generated_at")
+    # Use insertion order for predictions to avoid string-sort edge cases on timestamp fields.
+    prediction_doc = db[settings.predictions_collection].find_one(
+        sort=[("_id", -1)],
+        projection={"_id": 0},
+    )
 
     text = report_path.read_text(encoding="utf-8")
     text = _replace_block(

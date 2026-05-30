@@ -15,7 +15,10 @@ def main() -> None:
     latest_metrics = _safe_get_latest(settings.metrics_collection, "evaluated_at")
     latest_registry = _safe_get_latest(settings.registry_collection, "registered_at")
     latest_quality = _safe_get_latest("quality_audits", "audited_at")
-    latest_prediction = _safe_get_latest(settings.predictions_collection, "generated_at")
+    # Use insertion order for predictions to avoid string-sort edge cases on timestamp fields.
+    latest_prediction = db[settings.predictions_collection].find_one(
+        sort=[("_id", -1)], projection={"_id": 0}
+    )
 
     lines = ["# Runtime Report Snippet", ""]
     lines.append(f"- City: `{settings.city}`")

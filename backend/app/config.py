@@ -9,9 +9,9 @@ class Settings(BaseSettings):
     )
 
     project_name: str = "Pearls AQI Predictor"
-    city: str = "Lahore"
-    latitude: float = 31.5497
-    longitude: float = 74.3436
+    city: str = "Islamabad"
+    latitude: float = 33.6844
+    longitude: float = 73.0479
     timezone: str = "Asia/Karachi"
     api_provider: str = "open-meteo"
 
