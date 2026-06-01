@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     github_repo: str = ""
     github_token: str = ""
     github_branch: str = "main"
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
 
 settings = Settings()

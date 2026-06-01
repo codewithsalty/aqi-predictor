@@ -130,7 +130,34 @@ streamlit run app.py
 
 Set `AQI_API_BASE_URL` if the FastAPI backend is not running at `http://127.0.0.1:8000`.
 
-## 4) API Endpoints
+## 4) Deployment Connection
+
+The frontend is a live dashboard. It does not contain hardcoded demo data. It calls the FastAPI backend through:
+
+```text
+NEXT_PUBLIC_API_BASE_URL
+```
+
+For local development:
+
+```text
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+For public deployment:
+
+1. Deploy the FastAPI backend first.
+2. Set frontend `NEXT_PUBLIC_API_BASE_URL` to the deployed backend URL.
+3. Set backend `CORS_ORIGINS` to include the deployed frontend URL.
+
+Example:
+
+```text
+Backend CORS_ORIGINS=http://localhost:3000,https://your-frontend-domain.vercel.app
+Frontend NEXT_PUBLIC_API_BASE_URL=https://your-backend-domain.onrender.com
+```
+
+## 5) API Endpoints
 
 - `GET /health`
 - `GET /predict`
@@ -139,7 +166,7 @@ Set `AQI_API_BASE_URL` if the FastAPI backend is not running at `http://127.0.0.
 - `GET /quality/latest`
 - `POST /quality/run`
 
-## 5) CI/CD Workflows
+## 6) CI/CD Workflows
 
 - `feature-pipeline.yml`: hourly + manual trigger
 - `training-pipeline.yml`: daily + manual trigger
@@ -158,7 +185,7 @@ Model families currently evaluated:
 - Gradient Boosting
 - MLP neural-network challenger
 
-## 6) Submission Checklist
+## 7) Submission Checklist
 
 - [ ] Feature store data is cloud-hosted in MongoDB
 - [ ] At least 3 models trained, metrics logged, champion selected
