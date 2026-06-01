@@ -33,6 +33,9 @@ API endpoints:
 - `GET /quality/latest`
 - `POST /quality/run`
 
+Live backend API:
+- `https://aqi-predictor-api-cuec.onrender.com`
+
 ## Model Training
 
 Training is performed by:

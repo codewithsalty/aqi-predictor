@@ -163,7 +163,8 @@ Repository includes:
 Required links to finalize before submission:
 <!-- AUTO_LINKS_START -->
 - GitHub repository: `https://github.com/codewithsalty/aqi-predictor`
-- Live deployment: `[pending deployment]`
+- Live backend API: `https://aqi-predictor-api-cuec.onrender.com`
+- Live dashboard: `[pending frontend deployment]`
 - Demo video fallback: `[pending demo video]`
 - Screenshots folder/reference: `submission_evidence/screenshots`
 <!-- AUTO_LINKS_END -->

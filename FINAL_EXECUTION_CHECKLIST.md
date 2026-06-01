@@ -22,7 +22,8 @@
 - [ ] EDA artifacts generated (`run_eda` outputs).
 
 ## D) Demo Safety
-- [ ] Live deployment URL works.
+- [x] Live backend API deployment works: `https://aqi-predictor-api-cuec.onrender.com`
+- [ ] Live frontend dashboard deployment works.
 - [ ] Fallback demo video recorded.
 - [ ] Key screenshots captured:
   - pipeline logs

@@ -138,6 +138,21 @@ The frontend is a live dashboard. It does not contain hardcoded demo data. It ca
 NEXT_PUBLIC_API_BASE_URL
 ```
 
+Live backend API:
+
+```text
+https://aqi-predictor-api-cuec.onrender.com
+```
+
+Health and runtime verification:
+
+```text
+https://aqi-predictor-api-cuec.onrender.com/health
+https://aqi-predictor-api-cuec.onrender.com/predict
+https://aqi-predictor-api-cuec.onrender.com/metrics/latest
+https://aqi-predictor-api-cuec.onrender.com/pipeline/health
+```
+
 For local development:
 
 ```text

@@ -54,7 +54,7 @@ Your service is live
 Render gives a URL like:
 
 ```text
-https://aqi-predictor-api.onrender.com
+https://aqi-predictor-api-cuec.onrender.com
 ```
 
 ## Step 4: Test the Backend
@@ -62,9 +62,9 @@ https://aqi-predictor-api.onrender.com
 Open these in your browser:
 
 ```text
-https://aqi-predictor-api.onrender.com/health
-https://aqi-predictor-api.onrender.com/predict
-https://aqi-predictor-api.onrender.com/metrics/latest
+https://aqi-predictor-api-cuec.onrender.com/health
+https://aqi-predictor-api-cuec.onrender.com/predict
+https://aqi-predictor-api-cuec.onrender.com/metrics/latest
 ```
 
 Expected result:
@@ -99,7 +99,7 @@ http://localhost:3000,http://127.0.0.1:3000,https://your-vercel-url.vercel.app
 Then update the frontend environment variable:
 
 ```text
-NEXT_PUBLIC_API_BASE_URL=https://aqi-predictor-api.onrender.com
+NEXT_PUBLIC_API_BASE_URL=https://aqi-predictor-api-cuec.onrender.com
 ```
 
 ## Free Plan Note
