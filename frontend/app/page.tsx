@@ -67,20 +67,22 @@ export default function HomePage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [predictionRes, metricsRes, pipelineRes] = await Promise.all([
+        const [predictionRes, metricsRes] = await Promise.all([
           fetch(`${API_BASE}/predict`, { cache: "no-store" }),
           fetch(`${API_BASE}/metrics/latest`, { cache: "no-store" }),
-          fetch(`${API_BASE}/pipeline/health`, { cache: "no-store" }),
         ]);
         const predictionJson = await predictionRes.json();
         const metricsJson = await metricsRes.json();
-        const pipelineJson = await pipelineRes.json();
         if (!predictionRes.ok) throw new Error(predictionJson.detail || "Prediction endpoint failed");
         if (!metricsRes.ok) throw new Error(metricsJson.detail || "Metrics endpoint failed");
-        if (!pipelineRes.ok) throw new Error(pipelineJson.detail || "Pipeline endpoint failed");
         setForecast(predictionJson);
         setMetrics(metricsJson);
-        setPipeline(pipelineJson);
+        try {
+          const pipelineRes = await fetch(`${API_BASE}/pipeline/health`, { cache: "no-store" });
+          if (pipelineRes.ok) setPipeline(await pipelineRes.json());
+        } catch {
+          setPipeline({ recent_runs: [] });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Dashboard failed to load");
       } finally {
