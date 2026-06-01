@@ -171,10 +171,10 @@ Required links to finalize before submission:
 ## 11) Runtime Evidence Snapshot
 <!-- AUTO_RUNTIME_SUMMARY_START -->
 - City: `Islamabad`
-- Latest registry timestamp: `2026-06-01 11:57:29.242000`
-- Latest metrics timestamp: `2026-06-01 11:57:29.242000`
+- Latest registry timestamp: `2026-06-01 13:04:12.266000`
+- Latest metrics timestamp: `2026-06-01 13:04:12.266000`
 - Latest quality audit timestamp: `2026-06-01 12:01:17.717000`
-- Latest prediction timestamp: `2026-06-01T12:25:57.125728+00:00`
+- Latest prediction timestamp: `2026-06-01T12:47:57.394453+00:00`
 
 Latest quality audit:
 ```json
@@ -212,7 +212,7 @@ Latest prediction snapshot:
 ```json
 {
   "city": "Islamabad",
-  "generated_at": "2026-06-01T12:25:57.125728+00:00",
+  "generated_at": "2026-06-01T12:47:57.394453+00:00",
   "model": {
     "day_1": "ridge",
     "day_2": "random_forest",

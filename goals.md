@@ -39,10 +39,12 @@ Core objective:
 - Model metrics collection populated.
 - Model registry collection populated.
 - GridFS model artifact stored.
+- MLP neural-network challenger added to the model experiment set.
 - Predictions collection populated.
 - Quality audits collection populated.
 - Backend API implemented.
 - Frontend dashboard implemented and upgraded.
+- Optional Streamlit dashboard wrapper added for rubric compatibility.
 - Tests pass.
 - Frontend build passes.
 - Report auto-filled with latest runtime evidence.

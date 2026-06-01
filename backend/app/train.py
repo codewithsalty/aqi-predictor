@@ -7,7 +7,10 @@ import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import TimeSeriesSplit
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 from .config import settings
 from .db import db, ensure_indexes, record_pipeline_run
@@ -42,6 +45,16 @@ def _models() -> dict[str, Any]:
         "ridge": Ridge(alpha=1.0),
         "random_forest": RandomForestRegressor(n_estimators=200, random_state=42),
         "gradient_boosting": GradientBoostingRegressor(random_state=42),
+        "mlp_neural_net": make_pipeline(
+            StandardScaler(),
+            MLPRegressor(
+                hidden_layer_sizes=(64, 32),
+                activation="relu",
+                max_iter=800,
+                random_state=42,
+                early_stopping=True,
+            ),
+        ),
     }
 
 

@@ -14,6 +14,7 @@ End-to-end single-city AQI forecasting platform with:
 - `backend/scripts`: runnable pipeline entry points
 - `backend/tests`: core tests for risk/feature logic
 - `frontend`: Next.js dashboard UI
+- `streamlit_dashboard`: optional Streamlit dashboard wrapper for rubric compatibility
 - `.github/workflows`: hourly, daily, and manual recovery automation
 - `COMPLIANCE_PLAYBOOK.md`: evidence-based requirement interpretation
 - `EVALUATION_VIVA_SCRIPT.md`: 10–15 minute evaluator presentation flow
@@ -119,6 +120,16 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+### Optional Streamlit Dashboard
+
+```powershell
+cd streamlit_dashboard
+python -m pip install -r requirements.txt
+streamlit run app.py
+```
+
+Set `AQI_API_BASE_URL` if the FastAPI backend is not running at `http://127.0.0.1:8000`.
+
 ## 4) API Endpoints
 
 - `GET /health`
@@ -130,7 +141,7 @@ Open `http://localhost:3000`.
 
 ## 5) CI/CD Workflows
 
-- `feature-pipeline.yml`: every 4 hours + manual trigger
+- `feature-pipeline.yml`: hourly + manual trigger
 - `training-pipeline.yml`: daily + manual trigger
 - `manual-recovery.yml`: optional backfill + full recovery run
 
@@ -140,6 +151,12 @@ Required GitHub Secrets:
 - `CITY`
 - `LATITUDE`
 - `LONGITUDE`
+
+Model families currently evaluated:
+- Ridge Regression
+- Random Forest
+- Gradient Boosting
+- MLP neural-network challenger
 
 ## 6) Submission Checklist
 

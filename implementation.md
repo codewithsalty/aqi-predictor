@@ -46,6 +46,7 @@ The training pipeline:
   - Ridge
   - RandomForestRegressor
   - GradientBoostingRegressor
+  - MLPRegressor neural-network challenger
 - Uses time-series validation.
 - Logs RMSE, MAE, and R2.
 - Selects the best model for each forecast horizon by lowest RMSE.
@@ -53,7 +54,7 @@ The training pipeline:
 - Stores registry metadata in `model_registry`.
 - Stores the model artifact in MongoDB GridFS.
 
-Latest champion pattern:
+Latest champion pattern before the MLP challenger was added:
 - Day+1: ridge
 - Day+2: random_forest
 - Day+3: gradient_boosting
@@ -66,7 +67,7 @@ GitHub Actions workflows:
 - `.github/workflows/manual-recovery.yml`
 
 Automation behavior:
-- Feature Pipeline runs every 4 hours and can also be triggered manually.
+- Feature Pipeline runs hourly and can also be triggered manually.
 - Training Pipeline runs daily and can also be triggered manually.
 - Manual Recovery can run a 90-day backfill and then retrain if needed.
 
@@ -88,6 +89,8 @@ Current dashboard includes:
 
 Frontend environment:
 - `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000`
+
+An optional Streamlit dashboard is also included in `streamlit_dashboard/app.py` for rubric compatibility. It reads from the same FastAPI endpoints and can be run with `streamlit run app.py`.
 
 ## Verification Completed
 
