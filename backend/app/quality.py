@@ -31,7 +31,9 @@ def run_data_quality_audit() -> dict[str, Any]:
 
     ts_df = create_time_series_features(raw)
     daily = make_day_targets(ts_df)
-    leakage_hint = bool(daily["target_day_1"].isna().mean() < 0.01)
+    target_columns = {"target_day_1", "target_day_2", "target_day_3"}
+    leakage_columns = sorted(target_columns.intersection(raw.columns))
+    leakage_hint = bool(leakage_columns)
 
     audit = {
         "city": settings.city,
@@ -40,8 +42,15 @@ def run_data_quality_audit() -> dict[str, Any]:
         "duplicate_rows": duplicate_count,
         "null_counts": null_counts,
         "aqi_out_of_range_rows": out_of_range_aqi,
+        "daily_training_rows": int(len(daily)),
+        "leakage_check": {
+            "target_columns_present_in_raw_features": leakage_columns,
+            "future_targets_created_after_feature_generation": True,
+        },
         "leakage_risk_hint": leakage_hint,
-        "status": "pass" if duplicate_count == 0 and out_of_range_aqi == 0 else "warning",
+        "status": "pass"
+        if duplicate_count == 0 and out_of_range_aqi == 0 and not leakage_hint
+        else "warning",
     }
     db["quality_audits"].insert_one(audit)
     record_pipeline_run(

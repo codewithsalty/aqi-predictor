@@ -104,9 +104,9 @@ Final table:
 <!-- AUTO_METRICS_TABLE_START -->
 | Horizon | Champion Model | RMSE | MAE | R2 |
 |---|---|---:|---:|---:|
-| Day+1 | ridge | 10.206 | 7.864 | 0.517 |
-| Day+2 | random_forest | 18.566 | 13.779 | -0.316 |
-| Day+3 | random_forest | 20.079 | 13.696 | -0.334 |
+| Day+1 | ridge | 10.635 | 7.881 | 0.467 |
+| Day+2 | random_forest | 18.490 | 13.469 | -0.200 |
+| Day+3 | gradient_boosting | 22.428 | 15.858 | -0.846 |
 <!-- AUTO_METRICS_TABLE_END -->
 
 ## 7) Data Quality and Reliability Controls
@@ -162,26 +162,26 @@ Repository includes:
 
 Required links to finalize before submission:
 <!-- AUTO_LINKS_START -->
-- GitHub repository: `[add]`
-- Live deployment: `[add]`
-- Demo video fallback: `[add]`
+- GitHub repository: `https://github.com/codewithsalty/aqi-predictor`
+- Live deployment: `[pending deployment]`
+- Demo video fallback: `[pending demo video]`
 - Screenshots folder/reference: `submission_evidence/screenshots`
 <!-- AUTO_LINKS_END -->
 
 ## 11) Runtime Evidence Snapshot
 <!-- AUTO_RUNTIME_SUMMARY_START -->
 - City: `Islamabad`
-- Latest registry timestamp: `2026-05-30 20:44:38.942000`
-- Latest metrics timestamp: `2026-05-30 20:44:38.942000`
-- Latest quality audit timestamp: `2026-05-30 20:44:45.327000`
-- Latest prediction timestamp: `2026-05-30T20:45:59.281183+00:00`
+- Latest registry timestamp: `2026-06-01 11:49:00.725000`
+- Latest metrics timestamp: `2026-06-01 11:49:00.725000`
+- Latest quality audit timestamp: `2026-06-01 11:52:21.580000`
+- Latest prediction timestamp: `2026-06-01T11:49:14.484853+00:00`
 
 Latest quality audit:
 ```json
 {
   "city": "Islamabad",
-  "audited_at": "2026-05-30 20:44:45.327000",
-  "row_count": 2184,
+  "audited_at": "2026-06-01 11:52:21.580000",
+  "row_count": 2208,
   "duplicate_rows": 0,
   "null_counts": {
     "city": 0,
@@ -198,7 +198,12 @@ Latest quality audit:
     "ingested_at": 0
   },
   "aqi_out_of_range_rows": 0,
-  "leakage_risk_hint": true,
+  "daily_training_rows": 89,
+  "leakage_check": {
+    "target_columns_present_in_raw_features": [],
+    "future_targets_created_after_feature_generation": true
+  },
+  "leakage_risk_hint": false,
   "status": "pass"
 }
 ```
@@ -207,26 +212,26 @@ Latest prediction snapshot:
 ```json
 {
   "city": "Islamabad",
-  "generated_at": "2026-05-30T20:45:59.281183+00:00",
+  "generated_at": "2026-06-01T11:49:14.484853+00:00",
   "model": {
     "day_1": "ridge",
     "day_2": "random_forest",
-    "day_3": "random_forest"
+    "day_3": "gradient_boosting"
   },
   "predictions": [
     {
-      "date": "2026-05-31",
-      "aqi": 152.2400483677909,
-      "risk": "Unhealthy"
-    },
-    {
-      "date": "2026-06-01",
-      "aqi": 125.37312499999989,
+      "date": "2026-06-02",
+      "aqi": 128.1520002618871,
       "risk": "Unhealthy for Sensitive Groups"
     },
     {
-      "date": "2026-06-02",
-      "aqi": 121.77520833333321,
+      "date": "2026-06-03",
+      "aqi": 142.33874999999992,
+      "risk": "Unhealthy for Sensitive Groups"
+    },
+    {
+      "date": "2026-06-04",
+      "aqi": 111.22233022693123,
       "risk": "Unhealthy for Sensitive Groups"
     }
   ]
