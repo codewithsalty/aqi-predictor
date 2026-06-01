@@ -52,7 +52,7 @@ def run_data_quality_audit() -> dict[str, Any]:
         if duplicate_count == 0 and out_of_range_aqi == 0 and not leakage_hint
         else "warning",
     }
-    db["quality_audits"].insert_one(audit)
+    db["quality_audits"].insert_one(audit.copy())
     record_pipeline_run(
         "data_quality_audit",
         "success",

@@ -173,14 +173,14 @@ Required links to finalize before submission:
 - City: `Islamabad`
 - Latest registry timestamp: `2026-06-01 11:49:00.725000`
 - Latest metrics timestamp: `2026-06-01 11:49:00.725000`
-- Latest quality audit timestamp: `2026-06-01 11:52:21.580000`
-- Latest prediction timestamp: `2026-06-01T11:49:14.484853+00:00`
+- Latest quality audit timestamp: `2026-06-01 12:01:17.717000`
+- Latest prediction timestamp: `2026-06-01T12:01:23.600013+00:00`
 
 Latest quality audit:
 ```json
 {
   "city": "Islamabad",
-  "audited_at": "2026-06-01 11:52:21.580000",
+  "audited_at": "2026-06-01 12:01:17.717000",
   "row_count": 2208,
   "duplicate_rows": 0,
   "null_counts": {
@@ -212,7 +212,7 @@ Latest prediction snapshot:
 ```json
 {
   "city": "Islamabad",
-  "generated_at": "2026-06-01T11:49:14.484853+00:00",
+  "generated_at": "2026-06-01T12:01:23.600013+00:00",
   "model": {
     "day_1": "ridge",
     "day_2": "random_forest",

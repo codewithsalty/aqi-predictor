@@ -62,5 +62,5 @@ def predict_next_3_days() -> dict:
             {"date": str(base_day + timedelta(days=3)), "aqi": day3, "risk": risk_level(day3)},
         ],
     }
-    db[settings.predictions_collection].insert_one(result)
+    db[settings.predictions_collection].insert_one(result.copy())
     return result
