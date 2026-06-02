@@ -48,12 +48,13 @@ It runs automatically every hour:
 
 ```yaml
 cron: "17 * * * *"
+cron: "47 * * * *"
 ```
 
 This means:
 
 ```text
-Every hour at minute 17
+Every hour at minute 17, with a backup trigger at minute 47
 ```
 
 The workflow runs:

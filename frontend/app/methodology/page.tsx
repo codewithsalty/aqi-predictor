@@ -40,7 +40,7 @@ export default function MethodologyPage() {
         <aside className="method-summary-card">
           <span className="status-chip good">Automated</span>
           <h2>Current schedule</h2>
-          <p><strong>Feature pipeline:</strong> hourly at minute 17.</p>
+          <p><strong>Feature pipeline:</strong> hourly with a primary trigger at minute 17 and a backup trigger at minute 47.</p>
           <p><strong>Training pipeline:</strong> daily at 00:37 UTC, which is 5:37 AM in Pakistan.</p>
         </aside>
       </section>
