@@ -5,6 +5,7 @@ from typing import Any
 import joblib
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+from sklearn.base import clone
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.neural_network import MLPRegressor
@@ -68,8 +69,9 @@ def _evaluate_model(name: str, model, x: pd.DataFrame, y: pd.Series) -> dict[str
     for train_idx, test_idx in splitter.split(x):
         x_train, x_test = x.iloc[train_idx], x.iloc[test_idx]
         y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
-        model.fit(x_train, y_train)
-        preds = model.predict(x_test)
+        fold_model = clone(model)
+        fold_model.fit(x_train, y_train)
+        preds = fold_model.predict(x_test)
         fold_metrics.append(
             {
                 "rmse": _rmse(y_test, preds),
@@ -111,6 +113,7 @@ def train_and_register() -> dict[str, Any]:
         raise ValueError("Not enough processed daily points after feature creation.")
 
     horizon_models: dict[str, Any] = {}
+    all_trained_models: dict[str, dict[str, Any]] = {}
     all_horizon_metrics: dict[str, list[dict[str, Any]]] = {}
 
     for horizon, y in y_all.items():
@@ -118,7 +121,7 @@ def train_and_register() -> dict[str, Any]:
         trained_models = {}
         for name, model in _models().items():
             metrics = _evaluate_model(name, model, x, y)
-            trained_models[name] = model.fit(x, y)
+            trained_models[name] = clone(model).fit(x, y)
             metrics_rows.append({"model": name, **metrics})
 
         metrics_df = pd.DataFrame(metrics_rows).sort_values("rmse", ascending=True)
@@ -126,6 +129,7 @@ def train_and_register() -> dict[str, Any]:
         champion_name = champion["model"]
         champion_model = trained_models[champion_name]
         all_horizon_metrics[horizon] = json.loads(metrics_df.to_json(orient="records"))
+        all_trained_models[horizon] = trained_models
         horizon_models[horizon] = {
             "champion_name": champion_name,
             "champion_model": champion_model,
@@ -152,6 +156,7 @@ def train_and_register() -> dict[str, Any]:
                 "day_2": horizon_models["day_2"]["champion_model"],
                 "day_3": horizon_models["day_3"]["champion_model"],
             },
+            "all_models": all_trained_models,
             "feature_columns": FEATURE_COLUMNS,
             "city": settings.city,
             "trained_at": utc_now().isoformat(),
@@ -161,11 +166,40 @@ def train_and_register() -> dict[str, Any]:
     model_gridfs_id = str(save_model_to_gridfs(model_path))
 
     evaluated_at = utc_now()
+    overall_rows = []
+    for model_name in _models().keys():
+        rmse_values = []
+        mae_values = []
+        r2_values = []
+        rank_score = 0
+        for horizon, rows in all_horizon_metrics.items():
+            ranked_rows = sorted(rows, key=lambda row: row["rmse"])
+            model_row = next(row for row in ranked_rows if row["model"] == model_name)
+            rank_score += next(index for index, row in enumerate(ranked_rows, start=1) if row["model"] == model_name)
+            rmse_values.append(model_row["rmse"])
+            mae_values.append(model_row["mae"])
+            r2_values.append(model_row["r2"])
+        overall_rows.append(
+            {
+                "model": model_name,
+                "composite_rank_score": rank_score,
+                "avg_rmse": float(sum(rmse_values) / len(rmse_values)),
+                "avg_mae": float(sum(mae_values) / len(mae_values)),
+                "avg_r2": float(sum(r2_values) / len(r2_values)),
+            }
+        )
+    overall_leaderboard = sorted(
+        overall_rows,
+        key=lambda row: (row["composite_rank_score"], row["avg_rmse"]),
+    )
+    overall_winner = overall_leaderboard[0]
     db[settings.metrics_collection].insert_one(
         {
             "city": settings.city,
             "evaluated_at": evaluated_at,
             "metrics": all_horizon_metrics,
+            "overall_leaderboard": overall_leaderboard,
+            "overall_winner": overall_winner,
         }
     )
     db[settings.registry_collection].insert_one(
@@ -180,6 +214,9 @@ def train_and_register() -> dict[str, Any]:
             "model_path": str(model_path),
             "gridfs_model_id": model_gridfs_id,
             "feature_columns": FEATURE_COLUMNS,
+            "available_models": list(_models().keys()),
+            "overall_winner": overall_winner,
+            "overall_leaderboard": overall_leaderboard,
             "summary": {
                 "day_1": horizon_models["day_1"]["summary"],
                 "day_2": horizon_models["day_2"]["summary"],
@@ -198,6 +235,7 @@ def train_and_register() -> dict[str, Any]:
             },
             "model_path": str(model_path),
             "gridfs_model_id": model_gridfs_id,
+            "overall_winner": overall_winner["model"],
         },
     )
     return {
@@ -206,6 +244,8 @@ def train_and_register() -> dict[str, Any]:
             "day_2": horizon_models["day_2"]["champion_name"],
             "day_3": horizon_models["day_3"]["champion_name"],
         },
+        "overall_winner": overall_winner,
+        "overall_leaderboard": overall_leaderboard,
         "model_path": str(model_path),
         "gridfs_model_id": model_gridfs_id,
         "metrics": all_horizon_metrics,

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .db import db, ensure_indexes
 from .github_status import latest_workflow_runs
-from .predict import predict_next_3_days
+from .predict import latest_model_catalog, predict_next_3_days
 from .quality import run_data_quality_audit
 
 
@@ -43,10 +43,18 @@ def latest_metrics() -> dict:
     return doc
 
 
-@app.get("/predict")
-def predict() -> dict:
+@app.get("/models/latest")
+def models_latest() -> dict:
     try:
-        return predict_next_3_days()
+        return latest_model_catalog()
+    except Exception as ex:
+        raise HTTPException(status_code=500, detail=str(ex)) from ex
+
+
+@app.get("/predict")
+def predict(model: str | None = None) -> dict:
+    try:
+        return predict_next_3_days(model_name=model)
     except Exception as ex:
         raise HTTPException(status_code=500, detail=str(ex)) from ex
 
