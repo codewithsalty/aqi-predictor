@@ -6,6 +6,14 @@ on:
   schedule:
     - cron: "20 0 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/app/**"
+      - "backend/scripts/**"
+      - "backend/requirements.txt"
+      - ".github/workflows/training-pipeline.yml"
 
 jobs:
   train:
