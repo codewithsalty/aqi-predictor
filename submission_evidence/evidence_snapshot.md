@@ -2,7 +2,7 @@
 
 Generated at (UTC): `2026-06-01T13:05:11.897153+00:00`
 
-## Found (28)
+## Found (29)
 - README.md
 - report.md
 - COMPLIANCE_PLAYBOOK.md
@@ -31,9 +31,10 @@ Generated at (UTC): `2026-06-01T13:05:11.897153+00:00`
 - .github/workflows/feature-pipeline.yml
 - .github/workflows/training-pipeline.yml
 - .github/workflows/manual-recovery.yml
+- submission_evidence/automation_evidence.md
 
 ## Missing (0)
 - None
 
 ## Next Action
-- Proceed to populate runtime outputs, screenshots, and links in report.
+- Use `submission_evidence/automation_evidence.md` plus GitHub Actions screenshots as automation proof in the final report/demo.
