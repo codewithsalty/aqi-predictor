@@ -5,7 +5,7 @@
   },
   {
     title: "2. Daily training pipeline",
-    body: "The training workflow runs once per day. It reads historical features from the cloud feature store, trains multiple models, evaluates them with time-aware validation, and stores metrics for every horizon.",
+    body: "The training workflow runs daily with a backup trigger. It reads historical features from the cloud feature store, trains multiple models, evaluates them with time-aware validation, and stores metrics for every horizon.",
   },
   {
     title: "3. Champion selection",
@@ -41,7 +41,7 @@ export default function MethodologyPage() {
           <span className="status-chip good">Automated</span>
           <h2>Current schedule</h2>
           <p><strong>Feature pipeline:</strong> hourly with a primary trigger at minute 17 and a backup trigger at minute 47.</p>
-          <p><strong>Training pipeline:</strong> daily at 00:37 UTC, which is 5:37 AM in Pakistan.</p>
+          <p><strong>Training pipeline:</strong> daily at 00:37 UTC with a 01:07 UTC backup, plus a catch-up check after feature runs.</p>
         </aside>
       </section>
 

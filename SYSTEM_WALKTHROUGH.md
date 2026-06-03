@@ -221,14 +221,27 @@ It runs automatically once per day:
 
 ```yaml
 cron: "37 0 * * *"
+cron: "7 1 * * *"
 ```
 
 This means:
 
 ```text
-Daily at 00:37 UTC
-Daily at 5:37 AM Pakistan time
+Primary daily training at 00:37 UTC / 5:37 AM Pakistan time
+Backup daily training at 01:07 UTC / 6:07 AM Pakistan time
 ```
+
+There is also a defensive catch-up check inside the feature workflow:
+
+```text
+backend/scripts/run_train_if_due.py
+```
+
+After feature ingestion finishes, this script checks the latest successful training run in MongoDB Atlas.
+If training is already fresh, it skips.
+If training is older than the configured threshold, it trains and registers a new model.
+
+This protects the project from GitHub's public scheduler delays or missed scheduled events.
 
 The workflow runs:
 
@@ -510,12 +523,13 @@ Feature pipeline:
 Runs hourly.
 Fetches latest AQI/pollutant data.
 Stores features in MongoDB Atlas.
+Runs a non-blocking training catch-up check after ingestion.
 ```
 
 Training pipeline:
 
 ```text
-Runs daily.
+Runs daily with a backup schedule.
 Trains models.
 Updates metrics.
 Updates model registry.

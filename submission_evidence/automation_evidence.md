@@ -94,14 +94,20 @@ Current automation trigger:
 ```yaml
 schedule:
   - cron: "37 0 * * *"
+  - cron: "7 1 * * *"
 workflow_dispatch:
+push:
 ```
 
 Meaning:
 
-- Training runs once daily at `00:37 UTC`.
-- In Pakistan time, this is `05:37 AM`.
-- The latest confirmed training run was manually triggered and successful while waiting for the next scheduled daily window.
+- Training has a primary daily run at `00:37 UTC`, which is `05:37 AM` in Pakistan.
+- Training has a backup daily run at `01:07 UTC`, which is `06:07 AM` in Pakistan.
+- Training also runs on relevant pushes so workflow/code changes are verified immediately.
+- The feature workflow runs `backend/scripts/run_train_if_due.py` after ingestion as a non-blocking catch-up guard.
+- If the latest successful training run is fresh, catch-up skips.
+- If the latest successful training run is stale, catch-up trains and registers a new model.
+- This design protects the model registry from GitHub public scheduler delays or dropped cron events.
 
 Latest confirmed successful training run:
 
@@ -133,7 +139,8 @@ overall_winner: gradient_boosting
 This evidence proves:
 
 - GitHub Actions is active.
-- The feature pipeline is now firing from `schedule`.
+- The feature pipeline is configured with primary and backup hourly schedules.
 - The feature pipeline reaches MongoDB Atlas and writes run metadata.
 - The system has duplicate protection, so repeated hourly runs are safe.
-- The training pipeline is configured for daily automation and has a confirmed successful run.
+- The training pipeline is configured with primary and backup daily automation and has confirmed successful runs.
+- Feature ingestion now includes a training freshness guard so missed daily training can be recovered automatically.

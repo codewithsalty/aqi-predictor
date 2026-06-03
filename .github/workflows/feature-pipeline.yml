@@ -61,3 +61,13 @@ jobs:
           CITY: ${{ secrets.CITY }}
           LATITUDE: ${{ secrets.LATITUDE }}
           LONGITUDE: ${{ secrets.LONGITUDE }}
+
+      - name: Run daily training catch-up when due
+        continue-on-error: true
+        run: python -m scripts.run_train_if_due
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
+          CITY: ${{ secrets.CITY }}
+          MODEL_STORAGE_DIR: ./artifacts/models
+          TRAINING_MIN_INTERVAL_HOURS: "20"
