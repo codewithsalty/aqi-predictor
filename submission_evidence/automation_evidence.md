@@ -104,9 +104,10 @@ Meaning:
 - Training has a primary daily run at `00:37 UTC`, which is `05:37 AM` in Pakistan.
 - Training has a backup daily run at `01:07 UTC`, which is `06:07 AM` in Pakistan.
 - Training also runs on relevant pushes so workflow/code changes are verified immediately.
-- The feature workflow runs `backend/scripts/run_train_if_due.py` after ingestion as a non-blocking catch-up guard.
+- The scheduled/manual feature workflow runs `backend/scripts/run_train_if_due.py` after ingestion as a non-blocking catch-up guard.
 - If the latest successful training run is fresh, catch-up skips.
 - If the latest successful training run is stale, catch-up trains and registers a new model.
+- Catch-up is intentionally skipped on push-triggered feature verification because the training workflow handles training-related pushes.
 - This design protects the model registry from GitHub public scheduler delays or dropped cron events.
 
 Latest confirmed successful training run:

@@ -63,6 +63,7 @@ jobs:
           LONGITUDE: ${{ secrets.LONGITUDE }}
 
       - name: Run daily training catch-up when due
+        if: github.event_name != 'push'
         continue-on-error: true
         run: python -m scripts.run_train_if_due
         env:

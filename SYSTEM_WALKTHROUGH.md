@@ -237,11 +237,12 @@ There is also a defensive catch-up check inside the feature workflow:
 backend/scripts/run_train_if_due.py
 ```
 
-After feature ingestion finishes, this script checks the latest successful training run in MongoDB Atlas.
+After scheduled or manually triggered feature ingestion finishes, this script checks the latest successful training run in MongoDB Atlas.
 If training is already fresh, it skips.
 If training is older than the configured threshold, it trains and registers a new model.
 
 This protects the project from GitHub's public scheduler delays or missed scheduled events.
+It does not run during push-triggered feature verification because the dedicated training workflow already runs on training-related pushes.
 
 The workflow runs:
 
