@@ -531,7 +531,8 @@ Training pipeline:
 
 ```text
 Runs daily with a backup schedule.
-Trains models.
+Uses a freshness guard for scheduled runs, so the backup run skips if the primary run already trained recently.
+Manual and push-triggered verification runs still train fully.
 Updates metrics.
 Updates model registry.
 Stores model artifact in GridFS.

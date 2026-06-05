@@ -104,6 +104,7 @@ Meaning:
 - Training has a primary daily run at `00:37 UTC`, which is `05:37 AM` in Pakistan.
 - Training has a backup daily run at `01:07 UTC`, which is `06:07 AM` in Pakistan.
 - Training also runs on relevant pushes so workflow/code changes are verified immediately.
+- Scheduled training uses the freshness guard, so the backup daily run skips if the primary run already trained recently.
 - The scheduled/manual feature workflow runs `backend/scripts/run_train_if_due.py` after ingestion as a non-blocking catch-up guard.
 - If the latest successful training run is fresh, catch-up skips.
 - If the latest successful training run is stale, catch-up trains and registers a new model.
