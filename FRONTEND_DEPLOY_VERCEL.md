@@ -1,6 +1,7 @@
 # Frontend Deployment on Vercel
 
-This deploys the Next.js dashboard that visualizes the deployed FastAPI backend.
+This deploys the Next.js product frontend for Pearls AQI Predictor.
+It includes the landing page, live dashboard, methodology page, and creator profile.
 
 ## Current Backend API
 
@@ -38,6 +39,8 @@ Output Directory: .next
 Install Command: npm install
 ```
 
+Do not deploy from the repository root. The frontend app lives inside `frontend`.
+
 ## Step 3: Add Environment Variable
 
 Add this environment variable in Vercel:
@@ -58,19 +61,19 @@ https://aqi-predictor-xxxx.vercel.app
 
 ## Step 5: Allow Frontend in Render CORS
 
-After Vercel gives the frontend URL, open Render:
+The backend already allows Vercel preview/live domains using:
+
+```text
+CORS_ORIGIN_REGEX=https://.*\.vercel\.app|http://localhost:\d+|http://127\.0\.0\.1:\d+
+```
+
+If you want to be extra strict later, open Render:
 
 ```text
 aqi-predictor-api -> Environment
 ```
 
-Update:
-
-```text
-CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,https://your-vercel-url.vercel.app
-```
-
-Then click `Save Changes` and let Render redeploy.
+Then add your exact Vercel URL to `CORS_ORIGINS`.
 
 ## Step 6: Verify
 
@@ -82,6 +85,22 @@ Expected:
 - Day +1, Day +2, Day +3 show AQI numbers
 - Champion models show `ridge`, `random_forest`, and `gradient_boosting`
 - Pipeline health shows recent successful runs
+- The dashboard model picker can compare trained models
+- The methodology and about pages load from the header navigation
+
+## GitHub Cleanliness
+
+The local file below should not be committed:
+
+```text
+frontend/.env.local
+```
+
+The committed safe template is:
+
+```text
+frontend/.env.local.example
+```
 
 ## Automation
 

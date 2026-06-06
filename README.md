@@ -7,6 +7,7 @@ End-to-end single-city AQI forecasting platform with:
 - FastAPI inference + pipeline status endpoints
 - Premium Next.js dashboard for 3-day AQI forecast
 - GitHub Actions automation workflows
+- Vercel-ready frontend product with landing, dashboard, methodology, and creator profile
 
 ## 1) Project Structure
 
@@ -14,6 +15,7 @@ End-to-end single-city AQI forecasting platform with:
 - `backend/scripts`: runnable pipeline entry points
 - `backend/tests`: core tests for risk/feature logic
 - `frontend`: Next.js dashboard UI
+- `FRONTEND_DEPLOY_VERCEL.md`: final frontend deployment steps
 - `streamlit_dashboard`: optional Streamlit dashboard wrapper for rubric compatibility
 - `.github/workflows`: hourly, daily, and manual recovery automation
 - `COMPLIANCE_PLAYBOOK.md`: evidence-based requirement interpretation
@@ -120,6 +122,15 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+If another project is already using port 3000:
+
+```powershell
+cd frontend
+npm run dev -- -H 127.0.0.1 -p 3001
+```
+
+Open `http://127.0.0.1:3001`.
+
 ### Optional Streamlit Dashboard
 
 ```powershell
@@ -164,6 +175,7 @@ For public deployment:
 1. Deploy the FastAPI backend first.
 2. Set frontend `NEXT_PUBLIC_API_BASE_URL` to the deployed backend URL.
 3. Set backend `CORS_ORIGINS` to include the deployed frontend URL.
+4. In Vercel, set the project root directory to `frontend`.
 
 Example:
 
@@ -206,5 +218,6 @@ Model families currently evaluated:
 - [ ] At least 3 models trained, metrics logged, champion selected
 - [ ] 3-day prediction endpoint and dashboard are working
 - [ ] GitHub Actions logs are green
+- [ ] Vercel frontend deployment is live
 - [ ] Final report completed (`report.md`)
 - [ ] Demo video recorded for fallback evidence

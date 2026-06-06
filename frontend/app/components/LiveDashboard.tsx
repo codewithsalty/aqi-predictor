@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import type { Horizon, MetricsResponse, PipelineResponse, PredictResponse, QualityResponse, RegistryResponse } from "../lib/types";
 import { API_BASE, HORIZONS, aqiPercent, formatDate, formatDateTime, formatNumber, horizonLabel, modelLabel, riskTone, unique } from "../lib/format";
+import { fetchJson } from "../lib/api";
 
 const featureGroups = [
   { name: "Air pollutants", keys: ["pm10", "pm2_5", "co", "no2", "so2", "o3"] },
@@ -45,6 +46,8 @@ export function LiveDashboard() {
   const [selectedHorizon, setSelectedHorizon] = useState<Horizon>("day_1");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lastSyncedAt, setLastSyncedAt] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -52,39 +55,34 @@ export function LiveDashboard() {
       setError("");
       try {
         const modelQuery = selectedModel === "champion" ? "" : `?model=${encodeURIComponent(selectedModel)}`;
-        const [predictionRes, metricsRes, registryRes] = await Promise.all([
-          fetch(`${API_BASE}/predict${modelQuery}`, { cache: "no-store" }),
-          fetch(`${API_BASE}/metrics/latest`, { cache: "no-store" }),
-          fetch(`${API_BASE}/models/latest`, { cache: "no-store" }),
+        const [predictionJson, metricsJson, registryJson] = await Promise.all([
+          fetchJson<PredictResponse>(`/predict${modelQuery}`),
+          fetchJson<MetricsResponse>("/metrics/latest"),
+          fetchJson<RegistryResponse>("/models/latest"),
         ]);
-        const predictionJson = await predictionRes.json();
-        const metricsJson = await metricsRes.json();
-        const registryJson = await registryRes.json();
-        if (!predictionRes.ok) throw new Error(predictionJson.detail || "Prediction endpoint failed");
-        if (!metricsRes.ok) throw new Error(metricsJson.detail || "Metrics endpoint failed");
-        if (!registryRes.ok) throw new Error(registryJson.detail || "Model registry endpoint failed");
         setForecast(predictionJson);
         setMetrics(metricsJson);
         setRegistry(registryJson);
+        setLastSyncedAt(new Date().toISOString());
 
         try {
-          const [pipelineRes, qualityRes] = await Promise.all([
-            fetch(`${API_BASE}/pipeline/health`, { cache: "no-store" }),
-            fetch(`${API_BASE}/quality/latest`, { cache: "no-store" }),
+          const [pipelineResult, qualityResult] = await Promise.allSettled([
+            fetchJson<PipelineResponse>("/pipeline/health"),
+            fetchJson<QualityResponse>("/quality/latest"),
           ]);
-          if (pipelineRes.ok) setPipeline(await pipelineRes.json());
-          if (qualityRes.ok) setQuality(await qualityRes.json());
+          if (pipelineResult.status === "fulfilled") setPipeline(pipelineResult.value);
+          if (qualityResult.status === "fulfilled") setQuality(qualityResult.value);
         } catch {
           setPipeline({ recent_runs: [] });
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Dashboard failed to load");
+        setError(err instanceof Error ? err.message : "Dashboard failed to load. Check the API URL and backend CORS settings.");
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [selectedModel]);
+  }, [selectedModel, refreshKey]);
 
   const modelOptions = useMemo(() => ["champion", ...unique([...(registry?.available_models || []), ...(forecast?.available_models || [])])], [forecast, registry]);
   const champions = forecast?.model || registry?.champion_model || {};
@@ -120,10 +118,21 @@ export function LiveDashboard() {
             {modelOptions.map((model) => <option value={model} key={model}>{modelLabel(model)}</option>)}
           </select>
         </label>
-        <a className="ghost-button" href={`${API_BASE}/models/latest`} target="_blank" rel="noreferrer">Registry API</a>
+        <div className="command-actions">
+          <button className="ghost-button subtle-button" type="button" onClick={() => setRefreshKey((value) => value + 1)}>
+            Refresh data
+          </button>
+          <a className="ghost-button" href={`${API_BASE}/models/latest`} target="_blank" rel="noreferrer">Registry API</a>
+        </div>
       </div>
 
-      {error && <div className="alert-panel">{error}</div>}
+      {error && (
+        <div className="alert-panel">
+          <strong>Live API connection needs attention</strong>
+          <span>{error}</span>
+          <button type="button" onClick={() => setRefreshKey((value) => value + 1)}>Retry sync</button>
+        </div>
+      )}
       {loading && <LoadingSkeleton />}
 
       <div className="insight-grid">
@@ -152,6 +161,11 @@ export function LiveDashboard() {
           <p className="panel-label">Latest training</p>
           <strong>{formatDateTime(metrics?.evaluated_at)}</strong>
           <span>Cloud registry refreshed</span>
+        </article>
+        <article className="metric-card">
+          <p className="panel-label">Frontend sync</p>
+          <strong>{formatDateTime(lastSyncedAt)}</strong>
+          <span>Browser connected to deployed API</span>
         </article>
       </div>
 

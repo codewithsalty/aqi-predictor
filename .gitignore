@@ -7,3 +7,9 @@ backend/artifacts/
 frontend/.next/
 frontend/node_modules/
 .env
+.env.*
+!**/.env.example
+!**/.env.local.example
+.vercel/
+coverage/
+dist/

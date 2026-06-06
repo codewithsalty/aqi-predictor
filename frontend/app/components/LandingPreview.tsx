@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { PredictResponse } from "../lib/types";
-import { API_BASE, formatDate, modelLabel, riskTone } from "../lib/format";
+import { fetchJson } from "../lib/api";
+import { formatDate, modelLabel, riskTone } from "../lib/format";
 
 export function LandingPreview() {
   const [forecast, setForecast] = useState<PredictResponse | null>(null);
@@ -11,10 +12,8 @@ export function LandingPreview() {
 
   useEffect(() => {
     let active = true;
-    fetch(`${API_BASE}/predict`, { cache: "no-store" })
-      .then(async (response) => {
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.detail || "Prediction service is waking up");
+    fetchJson<PredictResponse>("/predict")
+      .then((payload) => {
         if (active) {
           setForecast(payload);
           setStatus("Live forecast synced from MongoDB Atlas and Render API");
