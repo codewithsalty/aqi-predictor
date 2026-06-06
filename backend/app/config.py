@@ -28,7 +28,15 @@ class Settings(BaseSettings):
     github_repo: str = ""
     github_token: str = ""
     github_branch: str = "main"
-    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    cors_origins: str = (
+        "http://localhost:3000,http://127.0.0.1:3000,"
+        "http://localhost:3001,http://127.0.0.1:3001"
+    )
+    cors_origin_regex: str = (
+        r"https://.*\.vercel\.app|"
+        r"http://localhost:\d+|"
+        r"http://127\.0\.0\.1:\d+"
+    )
 
 
 settings = Settings()
