@@ -20,7 +20,14 @@ Unlike static notebook prototypes, this platform operates as a fully automated s
 
 ---
 
-## ⚙️ Automated Pipeline & MLOps Lifecycle
+> [!NOTE]
+> **GitHub Actions & Account Note:** Due to subscription and payment processing limitations on the primary GitHub profile (`s4lmankhan`), GitHub Actions run limits were restricted. To guarantee 100% pipeline uptime and execute automated runners on schedule, all automated workflows, pipelines, and deployment integrations are hosted and executed under this secondary account (`codewithsalty`).
+
+---
+
+## 🏛️ Platform Architecture & Engineering Breakdown
+
+The platform is designed with a clean separation of concerns, divided into modular engineering layers:
 
 ```
              [ Open-Meteo Air Quality API ]
@@ -62,6 +69,50 @@ Unlike static notebook prototypes, this platform operates as a fully automated s
 
 ---
 
+## 🛠️ Detailed Implementation Lifecycle
+
+### 1. Data Ingestion & Storage (The Feature Store)
+* **What We Did**: Built a continuous, automated ingestion pipeline that communicates directly with the **Open-Meteo API** (extracting raw meteorology, time variables, and pollutant levels: PM2.5, PM10, CO, SO2, NO2, O3).
+* **The Data Store**: We utilized **MongoDB Atlas** as our primary cloud feature store database. 
+* **Reliability Features**: 
+  * Implemented a compound unique constraint on `(city, timestamp)` to block duplicate ingestion records.
+  * Configured a custom data auditing script to detect missing rows, flag out-of-range pollution metrics, and log daily ingestion health.
+
+### 2. Feature Engineering Pipeline
+* **What We Did**: Designed a preprocessing script inside `backend/app/features.py` that transforms raw readings into clean, high-signal ML features.
+* **Engineered Signals**:
+  * **Seasonality Inductors**: Extracted temporal variables (`day_of_month`, `month_of_year`) to teach the model natural seasonal pollution cycles.
+  * **AQI Lags**: Generated lag indicators at 1h, 2h, and 3h intervals to provide the regression algorithms with short-term ambient memory.
+  * **Rolling Metrics**: Calculated a 3-hour rolling average on PM2.5 and PM10 to filter out transient outlier peaks.
+  * **Rate of Change**: Designed an AQI delta (first-order difference) feature to track the velocity of air quality variations.
+
+### 3. Model Training & Champion Promotion (MLOps)
+* **What We Did**: Built an automated training pipeline inside `backend/app/train.py` that evaluates four different regressor families:
+  1. **Ridge Regression**: Linear baseline, resilient to multi-collinearity.
+  2. **Random Forest Regressor**: Non-linear tree ensemble to capture interactions.
+  3. **Gradient Boosting Regressor**: Boosting trees optimized on forecasting residuals.
+  4. **MLP Neural Network**: A multi-layer perceptron neural network using standard scaling, hidden layers, and early stopping.
+* **Validation Strategy**: We avoided random shuffling. Instead, we implemented a time-series-aware split (`TimeSeriesSplit(n_splits=3)`) to simulate actual production environments.
+* **Registry & GridFS**: Metrics (RMSE, MAE, R²) and trained model files are saved. Model binary weights are registered dynamically inside **MongoDB GridFS**, enabling direct streaming retrieval by the serving backend on demand.
+* **Overfitting Guardrail**: An safety checker raises warnings in the pipeline run logs if any model scores an R² value exceeding `0.999`.
+
+### 4. Inference & Gateway Service (FastAPI)
+* **What We Did**: Developed a REST API using **FastAPI** to load the champion model for each day (`day_1`, `day_2`, `day_3`) and return forecasts.
+* **Operational Endpoints**:
+  * `/predict`: Returns live predictions with US AQI hazard labels (e.g. *Good*, *Moderate*, *Unhealthy*).
+  * `/metrics/latest`: Exposes the leaderboard metrics.
+  * `/pipeline/health`: Checks the status of Github Actions.
+  * `/quality/latest`: Exposes the feature store data audit.
+
+### 5. Client User Interface (Next.js Dashboard)
+* **What We Did**: Developed a sleek Client UI using **Next.js** and TypeScript, employing the original light gradient ambient design tokens and responsive glassmorphic cards.
+* **UI Capabilities**:
+  * **Three-Day Forecast Cards**: Dynamic risk indicators based on predicted AQI levels.
+  * **Interactive Trend Visualizations**: Uses `Recharts` to chart forecasted pollution levels.
+  * **Model Comparators**: An interactive selector that allows users to compare champion performance with individual baseline algorithms.
+
+---
+
 ## 📂 Repository Organization
 
 The project directories are clean and highly structured:
@@ -75,8 +126,6 @@ The project directories are clean and highly structured:
 ---
 
 ## 📊 Serving API Gateway Endpoints
-
-The FastAPI backend exposes several core endpoints for predictions, diagnostics, and pipeline health:
 
 | Endpoint | Method | Description | Live Link |
 |---|---|---|---|
@@ -113,16 +162,6 @@ npm install
 npm run dev
 ```
 Open `http://localhost:3000` to view the live dashboard interface locally.
-
----
-
-## 🤖 Feature Engineering Details
-
-The pipeline engineers 17 feature fields from the raw hourly input streams before model training:
-* **Pollutant Signatures**: Hourly levels of PM2.5, PM10, CO, SO2, NO2, and O3.
-* **Seasonality Indicators**: Calendar month and day inputs mapping atmospheric cycles.
-* **Trend & Memory Features**: AQI change rates (delta) and historical lag steps (Lags at 1h, 2h, and 3h).
-* **Rolling Profiles**: 3-hour rolling averages of PM2.5 and PM10 to filter out outlier environmental spikes.
 
 ---
 
