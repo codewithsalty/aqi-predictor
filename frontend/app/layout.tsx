@@ -1,14 +1,22 @@
-﻿import "./globals.css";
-import { ReactNode } from "react";
-import { SiteFooter } from "./components/SiteFooter";
+import type { Metadata } from "next";
+import "./globals.css";
 import { SiteHeader } from "./components/SiteHeader";
+import { SiteFooter } from "./components/SiteFooter";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Pearls AQI Predictor | Islamabad Forecast Lab",
-  description: "A complete AQI forecasting web application for Islamabad with automated pipelines, model registry, and live 3-day predictions.",
+  description:
+    "An advanced air quality forecasting platform for Islamabad. 3-day AQI predictions powered by automated machine learning pipelines, a cloud feature store, and a model registry.",
+  keywords: ["AQI", "air quality", "Islamabad", "forecast", "machine learning", "Pearls AQI"],
+  authors: [{ name: "Salman Khan", url: "https://github.com/s4lmankhan" }],
+  openGraph: {
+    title: "Pearls AQI Predictor | Islamabad Forecast Lab",
+    description: "Real-time 3-day AQI forecasting for Islamabad powered by automated ML pipelines.",
+    type: "website",
+  },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>

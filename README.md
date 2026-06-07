@@ -1,223 +1,112 @@
-# Pearls AQI Predictor (Elite Submission Build)
+# 🌧️ Pearls AQI Predictor: Islamabad Forecast Lab
 
-End-to-end single-city AQI forecasting platform with:
-- Hourly feature ingestion
-- Daily multi-model retraining with dynamic champion selection
-- MongoDB cloud feature/model metadata store
-- FastAPI inference + pipeline status endpoints
-- Premium Next.js dashboard for 3-day AQI forecast
-- GitHub Actions automation workflows
-- Vercel-ready frontend product with landing, dashboard, methodology, and creator profile
+[![Data Pipeline](https://img.shields.io/badge/Pipeline-Active-emerald?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/s4lmankhan)
+[![Backend API](https://img.shields.io/badge/FastAPI-Serving-blue?style=for-the-badge&logo=fastapi&logoColor=white)](https://aqi-predictor-api-cuec.onrender.com/health)
+[![Frontend Dashboard](https://img.shields.io/badge/Next.js-Live-black?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://vercel.com)
+[![Database](https://img.shields.io/badge/MongoDB-Atlas-green?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/cloud/atlas)
 
-## 1) Project Structure
+An advanced, production-grade Air Quality Index (AQI) forecasting platform for Islamabad. Pearls AQI operates as an automated, self-healing pipeline that runs continuously: fetching live pollutant readings hourly, retraining four machine-learning models daily, registering the top-performing candidate in the cloud model store, and serving real-time 3-day forecasts via a high-performance API and interactive Next.js dashboard.
 
-- `backend/app`: ingestion, feature engineering, training, prediction, API
-- `backend/scripts`: runnable pipeline entry points
-- `backend/tests`: core tests for risk/feature logic
-- `frontend`: Next.js dashboard UI
-- `FRONTEND_DEPLOY_VERCEL.md`: final frontend deployment steps
-- `streamlit_dashboard`: optional Streamlit dashboard wrapper for rubric compatibility
-- `.github/workflows`: hourly, daily, and manual recovery automation
-- `COMPLIANCE_PLAYBOOK.md`: evidence-based requirement interpretation
-- `EVALUATION_VIVA_SCRIPT.md`: 10–15 minute evaluator presentation flow
-- `FINAL_EXECUTION_CHECKLIST.md`: submission-day go/no-go list
-- `PROJECT_EXECUTION_PLAN.md`: day-by-day plan to deadline
-- `RISK_REGISTER.md`: risk mitigation and contingency map
+---
 
-## 2) Setup
+## 🏛️ Platform Architecture
 
-### Backend
+The platform is engineered using a robust, decoupled architecture across four primary layers:
 
-```powershell
+```
+[ Open-Meteo API ]
+        │ (Hourly Ingest via GitHub Actions)
+        ▼
+┌────────────────────────────────────────────────────────┐
+│ 🗄️ FEATURE STORE LAYER (MongoDB Atlas)                 │
+│ - Uniqueness constraints on (city, timestamp)         │
+│ - Schema validation & deduplication guards             │
+└────────────────────────────────────────────────────────┘
+        │ (Daily Training Sync)
+        ▼
+┌────────────────────────────────────────────────────────┐
+│ 🤖 ML PIPELINE & MODEL REGISTRY                        │
+│ - Ridge Regression, Random Forest, Gradient Boosting,   │
+│   and MLP Neural Networks evaluated daily              │
+│ - TimeSeriesSplit (n=3) prevents temporal data leakage │
+│ - Best model per forecast horizon saved to GridFS      │
+└────────────────────────────────────────────────────────┘
+        │ (Live Inference Requests)
+        ▼
+┌────────────────────────────────────────────────────────┐
+│ 🔌 PREDICTION GATEWAY (FastAPI on Render)              │
+│ - Serves 3-day horizon predictions with risk labels    │
+│ - Real-time metrics, pipeline health, & quality audits │
+└────────────────────────────────────────────────────────┘
+        │ (Decision-Ready Analytics)
+        ▼
+┌────────────────────────────────────────────────────────┐
+│ 💻 ANALYTICS INTERFACE (Next.js on Vercel)             │
+│ - Light gradient theme with glassmorphic elements      │
+│ - Trend graphs, model comparators, & pipeline evidence │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📂 Repository Structure
+
+The codebase is organized into clean, modular components representing the deployed layout of the system:
+
+* **[`frontend/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/frontend)**: Next.js frontend application with dashboard viewports, styling tokens, and format utilities.
+* **[`backend/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/backend)**: FastAPI backend service, ML pipeline files (`train.py`, `predict.py`), feature store ingest logic, and unit tests.
+* **[`documentation/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/documentation)**: Project reports, data audit logs, and evidence of pipeline operations.
+* **[`video_demo/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/video_demo)**: Video demonstration guidelines, scripts, and video links.
+* **[`.github/workflows/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/.github/workflows)**: GitHub Actions YAML configuration files for the feature ingestion and training pipelines.
+
+---
+
+## 🚀 Quick Start & Local Setup
+
+### Prerequisite Environment
+Create a `.env` file at `backend/.env` with the following variables:
+```env
+MONGO_URI=your_mongodb_atlas_connection_string
+```
+
+### 1. Run the Backend (FastAPI)
+Navigate to the backend directory and launch the server:
+```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\Activate.ps1
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-Copy-Item .env.example .env
-```
-
-Update `.env` with MongoDB Atlas URI and city coordinates.
-
-### Local MongoDB Option (Fastest)
-
-```powershell
-docker compose -f docker-compose.local.yml up -d mongo
-```
-
-### Frontend
-
-```powershell
-cd frontend
-npm install
-Copy-Item .env.local.example .env.local
-```
-
-### One-Command Bootstrap (Windows PowerShell)
-
-```powershell
-.\scripts\bootstrap_local.ps1
-```
-
-## 3) Run Locally
-
-### Backfill and train
-
-```powershell
-cd backend
-python -m scripts.run_backfill
-python -m scripts.run_train
-python -m scripts.run_quality_audit
-python -m scripts.run_eda
-python -m scripts.run_explainability
-python -m scripts.generate_runtime_report
-python -m scripts.generate_evidence_pack
-```
-
-### Auto-fill Final Report From Runtime Data
-
-```powershell
-cd backend
-python -m scripts.autofill_report_from_runtime `
-  --repo-link "https://github.com/<you>/<repo>" `
-  --live-link "https://<your-app-url>" `
-  --video-link "https://<your-demo-video-url>" `
-  --screens-link "submission_evidence/screenshots"
-```
-
-### One-Command Local Full Run (Windows PowerShell)
-
-```powershell
-.\scripts\run_all_local.ps1
-```
-
-### Preflight Check (Recommended Before Full Run)
-
-```powershell
-cd backend
-python -m scripts.preflight_check
-```
-
-### Fast Mongo URI Update Helper
-
-```powershell
-.\scripts\set_mongo_uri.ps1 -MongoUri "mongodb://localhost:27017"
-```
-
-If Mongo is still blocked, follow:
-- `MONGODB_UNBLOCK_GUIDE.md`
-
-### Start API
-
-```powershell
-cd backend
 uvicorn app.api:app --reload --port 8000
 ```
+Verify the API is live by visiting `http://127.0.0.1:8000/health`.
 
-### Start UI
-
-```powershell
+### 2. Run the Frontend (Next.js)
+In a new terminal window, navigate to the frontend directory:
+```bash
 cd frontend
+npm install
 npm run dev
 ```
+Open `http://localhost:3000` to view the live dashboard.
 
-Open `http://localhost:3000`.
+---
 
-If another project is already using port 3000:
+## ⚙️ Automated Workflows (CI/CD)
 
-```powershell
-cd frontend
-npm run dev -- -H 127.0.0.1 -p 3001
-```
+The system relies on GitHub Actions to keep the prediction gateway operational and synchronized with fresh environmental features:
 
-Open `http://127.0.0.1:3001`.
+1. **Hourly Ingestion Pipeline (`feature-pipeline.yml`)**:
+   * Runs at minute 17 of every hour (with a backup at minute 47).
+   * Fetches weather data, computes lag/rolling averages, and saves them to MongoDB Atlas.
+2. **Daily Training Pipeline (`training-pipeline.yml`)**:
+   * Runs at 00:37 UTC daily.
+   * Retrains Ridge, RF, GBDT, and MLP models, evaluates metrics, and saves the new champion model weight binaries to MongoDB GridFS.
 
-### Optional Streamlit Dashboard
+---
 
-```powershell
-cd streamlit_dashboard
-python -m pip install -r requirements.txt
-streamlit run app.py
-```
+## 👨‍💻 Developed By
 
-Set `AQI_API_BASE_URL` if the FastAPI backend is not running at `http://127.0.0.1:8000`.
-
-## 4) Deployment Connection
-
-The frontend is a live dashboard. It does not contain hardcoded demo data. It calls the FastAPI backend through:
-
-```text
-NEXT_PUBLIC_API_BASE_URL
-```
-
-Live backend API:
-
-```text
-https://aqi-predictor-api-cuec.onrender.com
-```
-
-Health and runtime verification:
-
-```text
-https://aqi-predictor-api-cuec.onrender.com/health
-https://aqi-predictor-api-cuec.onrender.com/predict
-https://aqi-predictor-api-cuec.onrender.com/metrics/latest
-https://aqi-predictor-api-cuec.onrender.com/pipeline/health
-```
-
-For local development:
-
-```text
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
-```
-
-For public deployment:
-
-1. Deploy the FastAPI backend first.
-2. Set frontend `NEXT_PUBLIC_API_BASE_URL` to the deployed backend URL.
-3. Set backend `CORS_ORIGINS` to include the deployed frontend URL.
-4. In Vercel, set the project root directory to `frontend`.
-
-Example:
-
-```text
-Backend CORS_ORIGINS=http://localhost:3000,https://your-frontend-domain.vercel.app
-Frontend NEXT_PUBLIC_API_BASE_URL=https://your-backend-domain.onrender.com
-```
-
-## 5) API Endpoints
-
-- `GET /health`
-- `GET /predict`
-- `GET /metrics/latest`
-- `GET /pipeline/health`
-- `GET /quality/latest`
-- `POST /quality/run`
-
-## 6) CI/CD Workflows
-
-- `feature-pipeline.yml`: hourly + manual trigger
-- `training-pipeline.yml`: daily + manual trigger
-- `manual-recovery.yml`: optional backfill + full recovery run
-
-Required GitHub Secrets:
-- `MONGODB_URI`
-- `MONGODB_DB_NAME`
-- `CITY`
-- `LATITUDE`
-- `LONGITUDE`
-
-Model families currently evaluated:
-- Ridge Regression
-- Random Forest
-- Gradient Boosting
-- MLP neural-network challenger
-
-## 7) Submission Checklist
-
-- [ ] Feature store data is cloud-hosted in MongoDB
-- [ ] At least 3 models trained, metrics logged, champion selected
-- [ ] 3-day prediction endpoint and dashboard are working
-- [ ] GitHub Actions logs are green
-- [ ] Vercel frontend deployment is live
-- [ ] Final report completed (`report.md`)
-- [ ] Demo video recorded for fallback evidence
+**Salman Khan** — AI Engineer & Full Stack Developer
+* **LinkedIn**: [https://linkedin.com/in/s4lmankhan](https://linkedin.com/in/s4lmankhan)
+* **GitHub**: [https://github.com/s4lmankhan](https://github.com/s4lmankhan)
+* **Email**: codewithsalty@gmail.com

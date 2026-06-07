@@ -1,4 +1,4 @@
-﻿const pipelineSteps = [
+const pipelineSteps = [
   {
     title: "1. Hourly feature pipeline",
     body: "GitHub Actions runs the feature workflow every hour. It fetches Islamabad weather and pollutant data, builds lag/rolling/time features, deduplicates records, and writes them into MongoDB Atlas.",
@@ -9,7 +9,7 @@
   },
   {
     title: "3. Champion selection",
-    body: "Models compete separately for Day +1, Day +2, and Day +3. The dashboard also exposes an overall ranking so evaluators can understand both horizon-level and global performance.",
+    body: "Models compete separately for Day +1, Day +2, and Day +3. The dashboard also exposes an overall ranking so users can understand both horizon-level and global performance.",
   },
   {
     title: "4. Prediction service",
@@ -33,8 +33,8 @@ export default function MethodologyPage() {
           <p className="eyebrow">Methodology</p>
           <h1>How the AQI system thinks, trains, and stays alive.</h1>
           <p>
-            This page is written for viva, demos, and evaluator review. It explains the full machine-learning
-            workflow without requiring anyone to dig through code first.
+            This page documents the system's architecture, data pipeline operations, and methodologies. 
+            It explains the full machine-learning workflow in a clean, transparent format.
           </p>
         </div>
         <aside className="method-summary-card">
@@ -80,7 +80,7 @@ export default function MethodologyPage() {
         </article>
         <article className="method-card">
           <p className="eyebrow">Safety</p>
-          <h2>Clean demo surface</h2>
+          <h2>System Integrity</h2>
           <p>
             The frontend shows useful registry evidence and hides raw artifact IDs by default, keeping the public experience readable
             while the database still stores full technical proof.

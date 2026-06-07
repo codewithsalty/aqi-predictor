@@ -1,10 +1,10 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/methodology", label: "Methodology" },
-  { href: "/about", label: "Salman Khan" },
+  { href: "/about", label: "About" },
 ];
 
 export function SiteHeader() {
@@ -19,7 +19,9 @@ export function SiteHeader() {
       </Link>
       <nav className="site-nav" aria-label="Primary navigation">
         {navItems.map((item) => (
-          <Link href={item.href} key={item.href}>{item.label}</Link>
+          <Link href={item.href} key={item.href}>
+            {item.label}
+          </Link>
         ))}
       </nav>
       <Link className="header-cta" href="/dashboard">Launch dashboard</Link>

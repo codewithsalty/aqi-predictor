@@ -13,3 +13,7 @@ frontend/node_modules/
 .vercel/
 coverage/
 dist/
+
+# Local planning and evaluation docs (kept out of git/deployment)
+docs/
+*.pdf

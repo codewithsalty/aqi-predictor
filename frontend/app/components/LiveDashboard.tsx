@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
@@ -97,13 +97,9 @@ export function LiveDashboard() {
 
   return (
     <section className="dashboard-experience">
-      <div className="section-kicker">
-        <p className="eyebrow">Live operations</p>
-        <h1>Decision-ready AQI intelligence for Islamabad.</h1>
-        <p>
-          Compare model behavior, inspect champion selection, and validate that the pipeline is producing
-          live predictions from the cloud model registry.
-        </p>
+      <div className="dashboard-header">
+        <h1>Live AQI Forecast — Islamabad</h1>
+        <p className="eyebrow">Updated on every request from the cloud model registry</p>
       </div>
 
       <div className="command-bar">
@@ -150,7 +146,7 @@ export function LiveDashboard() {
         <article className="metric-card">
           <p className="panel-label">City</p>
           <strong>{forecast?.city || "Islamabad"}</strong>
-          <span>Single-city, evaluator-safe submission scope</span>
+          <span>Real-time air quality monitoring</span>
         </article>
         <article className="metric-card">
           <p className="panel-label">Overall winner</p>
@@ -228,7 +224,7 @@ export function LiveDashboard() {
               </div>
             ))}
           </div>
-          <p className="quiet-note">Registry identity is intentionally hidden in the UI; the backend stores the artifact securely in MongoDB GridFS.</p>
+          <p className="quiet-note">Model artifacts are stored securely in MongoDB GridFS and loaded fresh on every prediction request.</p>
         </article>
       </div>
 
