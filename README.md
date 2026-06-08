@@ -1,184 +1,243 @@
-# 🌧️ Pearls AQI Predictor: Islamabad Forecast Lab
+﻿# Pearls AQI Predictor - Islamabad Forecast Lab
 
-[![Live Demo](https://img.shields.io/badge/Live_Dashboard-Deploy--Success-emerald?style=for-the-badge&logo=vercel&logoColor=white)](https://pearls-aqi.vercel.app/)
-[![Backend API](https://img.shields.io/badge/FastAPI-Active-blue?style=for-the-badge&logo=fastapi&logoColor=white)](https://aqi-predictor-api-cuec.onrender.com/health)
-[![Data Pipeline](https://img.shields.io/badge/GitHub_Actions-Automated-orange?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/s4lmankhan)
-[![Database](https://img.shields.io/badge/MongoDB-Atlas--GridFS-green?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/cloud/atlas)
+[![Live Dashboard](https://img.shields.io/badge/Live%20Dashboard-Vercel-111827?style=for-the-badge&logo=vercel&logoColor=white)](https://pearls-aqi.vercel.app/)
+[![Backend API](https://img.shields.io/badge/FastAPI-Render-0f766e?style=for-the-badge&logo=fastapi&logoColor=white)](https://aqi-predictor-api-cuec.onrender.com/docs)
+[![Automation](https://img.shields.io/badge/GitHub%20Actions-Automated-2563eb?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/codewithsalty/aqi-predictor/actions)
+[![MongoDB Atlas](https://img.shields.io/badge/MongoDB%20Atlas-Feature%20Store-16a34a?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
 
-Pearls AQI is a production-grade, end-to-end Machine Learning Air Quality Index (AQI) forecasting platform designed for Islamabad, Pakistan. 
+Pearls AQI Predictor is my end-to-end Data Sciences internship project for forecasting the next 3 days of AQI in Islamabad, Pakistan.
 
-Unlike static notebook prototypes, this platform operates as a fully automated software product. It manages live data collection, schedules daily multi-model retraining, registers versioned model weights in a cloud-backed registry, and serves real-time Day +1, Day +2, and Day +3 AQI predictions through a high-performance API and interactive Next.js dashboard.
+I built this as a working ML product, not just a notebook. The system collects live air quality data, engineers features, stores them in MongoDB Atlas, trains multiple models automatically, registers champion models, and serves predictions through a FastAPI backend and a Next.js dashboard.
 
----
+## Live Links
 
-## 🔗 Live Deployments
+| Item | Link |
+|---|---|
+| Live frontend | https://pearls-aqi.vercel.app/ |
+| Forecast dashboard | https://pearls-aqi.vercel.app/dashboard |
+| Backend API | https://aqi-predictor-api-cuec.onrender.com |
+| FastAPI docs | https://aqi-predictor-api-cuec.onrender.com/docs |
+| Final report PDF | [documentation/Pearls_AQI_Predictor_Final_Internship_Report.pdf](documentation/Pearls_AQI_Predictor_Final_Internship_Report.pdf) |
 
-* **💻 Live Dashboard (Frontend)**: [https://pearls-aqi.vercel.app/](https://pearls-aqi.vercel.app/)
-* **🔌 Prediction API (Backend)**: [https://aqi-predictor-api-cuec.onrender.com](https://aqi-predictor-api-cuec.onrender.com)
-  * *API Health endpoint*: [https://aqi-predictor-api-cuec.onrender.com/health](https://aqi-predictor-api-cuec.onrender.com/health)
-  * *Live Forecast payload*: [https://aqi-predictor-api-cuec.onrender.com/predict](https://aqi-predictor-api-cuec.onrender.com/predict)
+## Project Screenshots
 
----
+<p align="center">
+  <img src="assets/readme/frontend-landing.png" width="49%" alt="Pearls AQI landing page" />
+  <img src="assets/readme/frontend-dashboard.png" width="49%" alt="Pearls AQI dashboard" />
+</p>
 
-> [!NOTE]
-> **GitHub Actions & Account Note:** Due to subscription and payment processing limitations on my primary GitHub profile (`s4lmankhan`), GitHub Actions run limits were restricted. To guarantee 100% pipeline uptime and execute automated runners on schedule, all automated workflows, pipelines, and deployment integrations are hosted and executed under my secondary account (`codewithsalty`).
+<p align="center">
+  <img src="assets/readme/frontend-methodology.png" width="49%" alt="Methodology page" />
+  <img src="assets/readme/frontend-about-salman.png" width="49%" alt="About Salman page" />
+</p>
 
----
+## What The System Does
 
-## 🏛️ Platform Architecture & Engineering Breakdown
+- Predicts Islamabad AQI for Day +1, Day +2, and Day +3.
+- Uses live API-based weather and pollutant data from Open-Meteo.
+- Stores processed features in MongoDB Atlas as a cloud feature store.
+- Trains multiple models: Ridge, Random Forest, Gradient Boosting, and MLP Neural Net.
+- Evaluates models using RMSE, MAE, and R2.
+- Selects champion models dynamically instead of hardcoding a winner.
+- Stores model registry metadata and model binaries through MongoDB Atlas and GridFS.
+- Runs automated feature and training pipelines using GitHub Actions.
+- Serves predictions through a deployed FastAPI backend on Render.
+- Presents results through a deployed Next.js frontend on Vercel.
+- Includes EDA, feature importance style evidence, quality audit checks, and pipeline evidence.
 
-I engineered the platform using a robust, decoupled architecture across four primary layers:
+## Architecture
 
-```
-             [ Open-Meteo Air Quality API ]
-                           │
-                           │ (Hourly Cron Job via GitHub Actions)
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│ 🗄️ FEATURE STORE (MongoDB Atlas)                       │
-│ - Unique indexes on (city, timestamp) prevent dups     │
-│ - Performs null audits and out-of-range value filters  │
-└────────────────────────────────────────────────────────┘
-                           │
-                           │ (Daily Retraining Cron Job)
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│ 🤖 RETRAINING & MODEL REGISTRY                         │
-│ - TimeSeriesSplit (n=3) eliminates data leakage        │
-│ - Trains Ridge, Random Forest, GBDT, & MLP Neural Net  │
-│ - Promotes lowest RMSE model per horizon as Champion   │
-│ - Weight binaries saved in MongoDB GridFS              │
-└────────────────────────────────────────────────────────┘
-                           │
-                           │ (On-Demand Inference)
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│ 🔌 PREDICTION GATEWAY (FastAPI on Render)              │
-│ - Day +1, +2, +3 forecasts with US AQI Hazard Labels   │
-│ - Quality audit & explainability endpoints             │
-└────────────────────────────────────────────────────────┘
-                           │
-                           │ (State-of-the-Art UI)
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│ 💻 WEB PORTAL (Next.js on Vercel)                      │
-│ - Light gradient ambient theme with glassmorphic cards │
-│ - Interactive charts & model performance comparator    │
-└────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🛠️ Detailed Implementation Lifecycle
-
-### 1. Data Ingestion & Storage (The Feature Store)
-* **What I Did**: I built a continuous, automated ingestion pipeline that communicates directly with the **Open-Meteo API** (extracting raw meteorology, time variables, and pollutant levels: PM2.5, PM10, CO, SO2, NO2, O3).
-* **The Data Store**: I utilized **MongoDB Atlas** as my primary cloud feature store database. 
-* **Reliability Features**: 
-  * I configured a compound unique constraint on `(city, timestamp)` to block duplicate ingestion records.
-  * I implemented a custom data auditing script to detect missing rows, flag out-of-range pollution metrics, and log daily ingestion health.
-
-### 2. Feature Engineering Pipeline
-* **What I Did**: I designed a preprocessing script inside `backend/app/features.py` that transforms raw readings into clean, high-signal ML features.
-* **Engineered Signals**:
-  * **Seasonality Inductors**: I extracted temporal variables (`day_of_month`, `month_of_year`) to teach the model natural seasonal pollution cycles.
-  * **AQI Lags**: I generated lag indicators at 1h, 2h, and 3h intervals to provide the regression algorithms with short-term ambient memory.
-  * **Rolling Metrics**: I calculated a 3-hour rolling average on PM2.5 and PM10 to filter out transient outlier peaks.
-  * **Rate of Change**: I designed an AQI delta (first-order difference) feature to track the velocity of air quality variations.
-
-### 3. Model Training & Champion Promotion (MLOps)
-* **What I Did**: I built an automated training pipeline inside `backend/app/train.py` that evaluates four different regressor families:
-  1. **Ridge Regression**: Linear baseline, resilient to multi-collinearity.
-  2. **Random Forest Regressor**: Non-linear tree ensemble to capture interactions.
-  3. **Gradient Boosting Regressor**: Boosting trees optimized on forecasting residuals.
-  4. **MLP Neural Network**: A multi-layer perceptron neural network using standard scaling, hidden layers, and early stopping.
-* **Validation Strategy**: I avoided random shuffling. Instead, I implemented a time-series-aware split (`TimeSeriesSplit(n_splits=3)`) to simulate actual production environments.
-* **Registry & GridFS**: Metrics (RMSE, MAE, R²) and trained model files are saved. Model binary weights are registered dynamically inside **MongoDB GridFS**, enabling direct streaming retrieval by the serving backend on demand.
-* **Overfitting Guardrail**: An safety checker raises warnings in the pipeline run logs if any model scores an R² value exceeding `0.999`.
-
-### 4. Inference & Gateway Service (FastAPI)
-* **What I Did**: I developed a REST API using **FastAPI** to load the champion model for each day (`day_1`, `day_2`, `day_3`) and return forecasts.
-* **Operational Endpoints**:
-  * `/predict`: Returns live predictions with US AQI hazard labels (e.g. *Good*, *Moderate*, *Unhealthy*).
-  * `/metrics/latest`: Exposes the leaderboard metrics.
-  * `/pipeline/health`: Checks the status of Github Actions.
-  * `/quality/latest`: Exposes the feature store data audit.
-
-### 5. Render Backend Deployment
-* **What I Did**: I deployed the FastAPI backend as a public Web Service on **Render** to serve live inference queries for the frontend.
-* **Deployment Details**:
-  * **Service Type**: Web Service
-  * **Root Directory**: `backend` (tells Render to execute commands inside the backend folder)
-  * **Build Command**: `pip install -r requirements.deploy.txt` (installs only lightweight serving packages without heavy training dependencies)
-  * **Start Command**: `uvicorn app.api:app --host 0.0.0.0 --port $PORT`
-  * **Environment Variables**:
-    * `MONGO_URI`: The MongoDB Atlas connection string so the API can read features and load registered GridFS model champions.
-    * `MONGO_DB_NAME`: The database namespace to fetch models.
-
-### 6. Client User Interface (Next.js Dashboard)
-* **What I Did**: I developed a sleek Client UI using **Next.js** and TypeScript, employing the original light gradient ambient design tokens and responsive glassmorphic cards.
-* **UI Capabilities**:
-  * **Three-Day Forecast Cards**: Dynamic risk indicators based on predicted AQI levels.
-  * **Interactive Trend Visualizations**: Uses `Recharts` to chart forecasted pollution levels.
-  * **Model Comparators**: An interactive selector that allows users to compare champion performance with individual baseline algorithms.
-
----
-
-## 📂 Repository Organization
-
-The project directories are clean and highly structured:
-
-* **[`frontend/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/frontend)**: Next.js frontend application, layout elements, formatting utilities, and component files.
-* **[`backend/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/backend)**: FastAPI backend service, data ingest engines, training modules, evaluation metrics, and local unit tests.
-* **[`documentation/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/documentation)**: Contains the final project report, data audit logs, and evidence of automation.
-* **[`video_demo/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/video_demo)**: Folder holding presentation guidelines, scripts, and video walk-through placeholders.
-* **[`.github/workflows/`](file:///c:/Users/grcla/OneDrive/Desktop/10pearls%20proj/.github/workflows)**: GitHub Actions workflows defining the automated cron ingestion and training schedules.
-
----
-
-## 📊 Serving API Gateway Endpoints
-
-| Endpoint | Method | Description | Live Link |
-|---|---|---|---|
-| `/health` | `GET` | Validates API connectivity and status | [View Live](https://aqi-predictor-api-cuec.onrender.com/health) |
-| `/predict` | `GET` | Returns Islamabad 3-day AQI forecasts and champions | [View Live](https://aqi-predictor-api-cuec.onrender.com/predict) |
-| `/metrics/latest` | `GET` | Returns performance metrics (RMSE, MAE, R2) for all models | [View Live](https://aqi-predictor-api-cuec.onrender.com/metrics/latest) |
-| `/pipeline/health` | `GET` | Returns pipeline run histories and GitHub Action triggers | [View Live](https://aqi-predictor-api-cuec.onrender.com/pipeline/health) |
-| `/quality/latest` | `GET` | Returns the data quality audit logs (null checks, leakage check) | [View Live](https://aqi-predictor-api-cuec.onrender.com/quality/latest) |
-
----
-
-## 🔧 Technical Setup & Local Execution
-
-### Local Environment Variables
-Create a file at `backend/.env` containing:
-```env
-MONGO_URI=your_mongodb_atlas_connection_string
+```text
+Open-Meteo APIs
+   |
+   | hourly GitHub Actions feature pipeline
+   v
+MongoDB Atlas Feature Store
+   |
+   | daily/catch-up GitHub Actions training pipeline
+   v
+Model Metrics + Model Registry + GridFS Artifacts
+   |
+   | inference endpoints
+   v
+FastAPI Backend on Render
+   |
+   | public API calls
+   v
+Next.js Frontend on Vercel
 ```
 
-### 1. Launch Backend API (FastAPI)
+## Latest Forecast Snapshot
+
+The live backend returns the latest 3-day Islamabad forecast from the model registry.
+
+| Horizon | Date | Predicted AQI | Risk | Champion model |
+|---|---:|---:|---|---|
+| Day +1 | 2026-06-08 | 87.89 | Moderate | ridge |
+| Day +2 | 2026-06-09 | 86.41 | Moderate | random_forest |
+| Day +3 | 2026-06-10 | 100.50 | Unhealthy for Sensitive Groups | random_forest |
+
+The dashboard also supports model override, so individual trained models can be compared against the automatic horizon champions.
+
+## Model Training Summary
+
+The training pipeline reads historical features from MongoDB Atlas, creates future targets for 1-day, 2-day, and 3-day forecasting, trains all candidate models, evaluates them, and stores the full result in the cloud registry.
+
+| Horizon | Selected champion | RMSE | MAE | R2 |
+|---|---|---:|---:|---:|
+| Day +1 | ridge | 12.19 | 8.88 | 0.507 |
+| Day +2 | random_forest | 22.24 | 16.54 | -0.673 |
+| Day +3 | random_forest | 24.10 | 17.45 | -0.973 |
+
+Overall leaderboard winner: `random_forest`.
+
+## Cloud Evidence
+
+### MongoDB Atlas
+
+<p align="center">
+  <img src="assets/readme/atlas-collections.png" width="49%" alt="MongoDB Atlas collections" />
+  <img src="assets/readme/atlas-features-v1.png" width="49%" alt="MongoDB Atlas feature store" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/atlas-model-registry.png" width="49%" alt="MongoDB Atlas model registry" />
+  <img src="assets/readme/atlas-model-metrics.png" width="49%" alt="MongoDB Atlas model metrics" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/atlas-predictions.png" width="49%" alt="MongoDB Atlas predictions" />
+  <img src="assets/readme/atlas-quality-audits.png" width="49%" alt="MongoDB Atlas quality audits" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/atlas-pipeline-runs.png" width="80%" alt="MongoDB Atlas pipeline run logs" />
+</p>
+
+### GitHub Actions Automation
+
+<p align="center">
+  <img src="assets/readme/github-actions-green.png" width="49%" alt="GitHub Actions green runs" />
+  <img src="assets/readme/github-feature-pipeline-runs.png" width="49%" alt="Feature pipeline runs" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/github-training-pipeline-runs.png" width="80%" alt="Training pipeline runs" />
+</p>
+
+### Backend and Frontend Deployments
+
+<p align="center">
+  <img src="assets/readme/render-service.png" width="49%" alt="Render backend service" />
+  <img src="assets/readme/render-events.png" width="49%" alt="Render deploy events" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/vercel-deployment.png" width="49%" alt="Vercel deployment" />
+  <img src="assets/readme/vercel-logs.png" width="49%" alt="Vercel logs" />
+</p>
+
+### API, EDA, and Submission Proof
+
+<p align="center">
+  <img src="assets/readme/backend-fastapi-docs.png" width="49%" alt="FastAPI docs" />
+  <img src="assets/readme/backend-api-evidence.png" width="49%" alt="Backend API evidence" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/eda-daily-aqi-trend.png" width="49%" alt="EDA daily AQI trend" />
+  <img src="assets/readme/local-artifact-evidence.png" width="49%" alt="Local artifact evidence" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/candidate-portal-submission.png" width="80%" alt="Candidate portal submission proof" />
+</p>
+
+## Automation Details
+
+### Feature Pipeline
+
+Workflow file: `.github/workflows/feature-pipeline.yml`
+
+- Runs on GitHub Actions schedule.
+- Has primary and backup cron triggers because GitHub scheduled runners can be delayed.
+- Fetches current Islamabad air quality and weather data.
+- Engineers features and stores them in MongoDB Atlas.
+- Uses deduplication so repeated scheduled runs do not corrupt the feature store.
+- Logs each run to the `pipeline_runs` collection.
+
+### Training Pipeline
+
+Workflow file: `.github/workflows/training-pipeline.yml`
+
+- Runs daily and also includes catch-up logic after feature runs.
+- Fetches historical feature data from MongoDB Atlas.
+- Trains Ridge, Random Forest, Gradient Boosting, and MLP Neural Net models.
+- Evaluates with RMSE, MAE, and R2.
+- Saves model metrics, model registry records, and model artifacts.
+- Generates latest 3-day prediction records.
+
+### Manual Recovery
+
+Workflow file: `.github/workflows/manual-recovery.yml`
+
+This exists so I can manually recover the system if any external platform delays or skips a scheduled run.
+
+## Repository Structure
+
+```text
+backend/               FastAPI service, database layer, feature pipeline, training code
+frontend/              Next.js frontend product dashboard
+.github/workflows/     Feature, training, and manual recovery automation
+assets/readme/         Public screenshots used inside this README
+documentation/         Final internship report PDF only
+render.yaml            Render deployment blueprint
+```
+
+## Local Setup
+
+### Backend
+
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+.venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.api:app --reload --port 8000
 ```
-API Documentation will be available at `http://127.0.0.1:8000/docs`.
 
-### 2. Launch Interface Dashboard (Next.js)
+Required backend environment variables:
+
+```env
+MONGODB_URI=your_mongodb_atlas_uri
+MONGODB_DB_NAME=aqi_predictor
+CITY=Islamabad
+LATITUDE=33.6844
+LONGITUDE=73.0479
+```
+
+### Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Open `http://localhost:3000` to view the live dashboard interface locally.
 
----
+The frontend reads the backend URL from its environment configuration. For local testing, point it to the local FastAPI server or to the deployed Render API.
 
-## 👨‍💻 Developed & Engineered By
+## Final Submission
 
-**Salman Khan** — AI Engineer & Full Stack Developer
-* **LinkedIn**: [https://linkedin.com/in/s4lmankhan](https://linkedin.com/in/s4lmankhan)
-* **GitHub**: [https://github.com/s4lmankhan](https://github.com/s4lmankhan)
-* **Email**: codewithsalty@gmail.com
+The candidate portal requested a public GitHub repository link. This repository contains the working project code, deployed frontend/backend links, automation workflows, screenshots, evidence, and final report PDF.
+
+Final report PDF:
+
+[documentation/Pearls_AQI_Predictor_Final_Internship_Report.pdf](documentation/Pearls_AQI_Predictor_Final_Internship_Report.pdf)
+
+## Built By
+
+Salman Khan
+
+- GitHub: https://github.com/codewithsalty
+- Live project: https://pearls-aqi.vercel.app/
+- Backend API: https://aqi-predictor-api-cuec.onrender.com/docs
